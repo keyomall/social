@@ -1,1 +1,7 @@
-node_modules/\ndist/\nbuild/\n.env
+node_modules/
+dist/
+build/
+.env
+coverage/
+.DS_Store
+*.log
