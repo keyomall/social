@@ -7,6 +7,8 @@ import { SystemHealth } from "@/components/dashboard/SystemHealth";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ProfileAnalytics } from "@/components/dashboard/ProfileAnalytics";
 import { TrafficDashboard } from "@/components/dashboard/TrafficDashboard";
+import { CampaignTracker } from "@/components/dashboard/CampaignTracker";
+import { ReportEngine } from "@/components/dashboard/ReportEngine";
 
 export default function Home() {
   const { hasCompletedOnboarding } = useConfigStore();
@@ -32,6 +34,8 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div className="lg:col-span-3 space-y-8">
               <PublishEngine />
+              <CampaignTracker />
+              <ReportEngine />
               <ProfileAnalytics />
             </div>
             <div className="lg:col-span-1 space-y-8">
