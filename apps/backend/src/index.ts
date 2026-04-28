@@ -7,6 +7,7 @@ import { PromptStrategyEngine } from './domain/ai-vault/PromptStrategy';
 import { publishQueue } from './infrastructure/scheduler/PublishQueue';
 import { getQueueMetrics } from './infrastructure/scheduler/QueueMetrics';
 import mediaRoutes from './routes/media';
+import analyticsRoutes from './routes/analytics';
 import path from 'path';
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 
 // Rutas
 app.use('/api/media', mediaRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 const PORT = process.env.PORT || 3001;
 

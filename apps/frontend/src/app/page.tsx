@@ -9,6 +9,7 @@ import { ProfileAnalytics } from "@/components/dashboard/ProfileAnalytics";
 import { TrafficDashboard } from "@/components/dashboard/TrafficDashboard";
 import { CampaignTracker } from "@/components/dashboard/CampaignTracker";
 import { ReportEngine } from "@/components/dashboard/ReportEngine";
+import { AnalyticsDashboard } from "@/components/dashboard/AnalyticsDashboard";
 
 export default function Home() {
   const { hasCompletedOnboarding } = useConfigStore();
@@ -37,6 +38,7 @@ export default function Home() {
               <CampaignTracker />
               <ReportEngine />
               <ProfileAnalytics />
+              <AnalyticsDashboard />
             </div>
             <div className="lg:col-span-1 space-y-8">
               <SystemHealth />
