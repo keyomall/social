@@ -30,3 +30,16 @@ Cualquier post en estado `DRAFT` o `SCHEDULED` puede ser modificado por el usuar
 1. **Inteligencia Nativa, no como Add-on**: Las herramientas tradicionales agregaron un botón de "Generar con IA". AuraSync tiene la IA en el centro del flujo de trabajo (Generación Masiva -> Rotación de Keys -> Spintax).
 2. **Spintax Semántico Automatizado**: Publicar el mismo mensaje en 5 páginas te hace shadowban. AuraSync genera 5 mensajes únicos que dicen lo mismo, programándolos al instante.
 3. **Resiliencia Extrema (Military Grade)**: Si cae la API de IA, AuraSync cambia de proveedor en nanosegundos sin intervención humana.
+
+## 5. Roadmap Hacia el Grado Militar Mundial (The "Anti-Ban" Architecture)
+Para evitar que el sistema sea etiquetado como "Botnet" por Meta, X o TikTok, el roadmap de AuraSync requiere implementar las tácticas de las herramientas de *Guerilla Marketing* y agencias globales:
+
+1. **Proxy Rotation & IP Anchoring:**
+   - **Problema:** Si 50 posts salen desde la misma IP del datacenter (AWS/DigitalOcean), se banea el cluster de cuentas.
+   - **Solución AuraSync:** Modificar `ISocialAdapter` para que requiera un objeto `ProxyConfig`. Cada cuenta social se amarra a un proxy residencial geolocalizado. 
+2. **Account Warm-up Algorithms:**
+   - **Problema:** Las cuentas jóvenes mueren por publicar agresivamente.
+   - **Solución AuraSync:** Implementar en `BullMQ` un *Ramp-up Scheduler*. Si la cuenta es nivel 1 (nueva), solo publica 1 vez al día. A los 30 días sube a nivel 2.
+3. **App Review Compliance (OAuth 2.0 Strict):**
+   - **Problema:** Robo o invalidación de tokens continuos.
+   - **Solución:** Implementar un flujo "Headless OAuth" o solicitar formalmente permisos como `pages_read_engagement`, `pages_manage_posts` con Meta Business Verification.

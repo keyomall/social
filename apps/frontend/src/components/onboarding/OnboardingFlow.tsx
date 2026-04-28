@@ -10,7 +10,8 @@ import { KeyRound, CheckCircle2, Loader2, Info } from "lucide-react";
 
 export function OnboardingFlow() {
   const [step, setStep] = useState(1);
-  const [openRouterKey, setOpenRouterKey] = useState("");
+  const [provider, setProvider] = useState("OPENROUTER");
+  const [apiKey, setApiKey] = useState("");
   const [isValidating, setIsValidating] = useState(false);
   const [success, setSuccess] = useState(false);
   const { setHasCompletedOnboarding, organizationId } = useConfigStore();
@@ -22,8 +23,8 @@ export function OnboardingFlow() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          provider: "OPENROUTER",
-          apiKey: openRouterKey,
+          provider,
+          apiKey,
           organizationId
         })
       });
@@ -64,17 +65,36 @@ export function OnboardingFlow() {
                   Configuración del Motor de IA
                 </CardTitle>
                 <CardDescription>
-                  Ingresa tu API Key principal. El sistema configurará el Carrusel de Llaves automáticamente.
+                  Selecciona tu proveedor principal e ingresa tu API Key. El sistema soporta Fallback automático.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Button 
+                    variant={provider === 'OPENROUTER' ? 'default' : 'outline'} 
+                    onClick={() => setProvider('OPENROUTER')}
+                    className="flex-1"
+                    disabled={isValidating || success}
+                  >
+                    OpenRouter
+                  </Button>
+                  <Button 
+                    variant={provider === 'DEEPSEEK' ? 'default' : 'outline'} 
+                    onClick={() => setProvider('DEEPSEEK')}
+                    className="flex-1"
+                    disabled={isValidating || success}
+                  >
+                    DeepSeek
+                  </Button>
+                </div>
+                
+                <div className="space-y-2 pt-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium leading-none">OpenRouter API Key</label>
+                    <label className="text-sm font-medium leading-none">API Key ({provider})</label>
                     <Tooltip>
                       <TooltipTrigger render={<span className="inline-flex cursor-help"><Info className="h-4 w-4 text-slate-400" /></span>} />
                       <TooltipContent>
-                        <p className="w-[200px] text-xs">Recomendamos OpenRouter para habilitar el fallback automático entre modelos premium y open source.</p>
+                        <p className="w-[200px] text-xs">Recomendamos DeepSeek por sus bajos costos para volumen alto, o OpenRouter para aprovechar múltiples modelos y fallback garantizado.</p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -82,10 +102,10 @@ export function OnboardingFlow() {
                     <KeyRound className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                     <Input
                       type="password"
-                      placeholder="sk-or-v1-..."
+                      placeholder={provider === "DEEPSEEK" ? "sk-..." : "sk-or-v1-..."}
                       className="pl-9"
-                      value={openRouterKey}
-                      onChange={(e) => setOpenRouterKey(e.target.value)}
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
                       disabled={isValidating || success}
                     />
                   </div>
@@ -95,7 +115,7 @@ export function OnboardingFlow() {
                 <Button 
                   className="w-full transition-all" 
                   onClick={handleValidate}
-                  disabled={!openRouterKey || isValidating || success}
+                  disabled={!apiKey || isValidating || success}
                 >
                   {isValidating ? (
                     <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Validando Conexión...</>

@@ -24,12 +24,14 @@ export class PromptStrategyEngine {
       return this.generateViralPosts(seedIdea, targetCount);
     }
 
-    // SIMULACIÓN: Éxito con OpenRouter (Fallback)
-    console.log(`[PromptStrategyEngine] Llamando a API con seed: "${seedIdea}"...`);
+    // SIMULACIÓN: Éxito con proveedor actual (Fallback)
+    console.log(`[PromptStrategyEngine] Llamando a API (${currentKey.provider}) con seed: "${seedIdea}"...`);
     
     const results = [];
+    const modelTag = currentKey.provider === 'DEEPSEEK' ? '🧠 Generado inteligentemente por DeepSeek' : '✨ Generado por OpenRouter';
+
     for (let i = 0; i < targetCount; i++) {
-      results.push(`[Variante ${i+1}] ${seedIdea} - ¡Descubre más aquí! 🔥🚀 #Viral`);
+      results.push(`[Variante ${i+1}] ${seedIdea} - ¡Descubre más aquí! 🔥🚀 \n\n${modelTag}`);
     }
 
     return results;

@@ -1,6 +1,6 @@
 export interface AiKeyRecord {
   id: string;
-  provider: 'OPENROUTER' | 'OPENAI' | 'ANTHROPIC';
+  provider: 'OPENROUTER' | 'DEEPSEEK' | 'OPENAI' | 'ANTHROPIC';
   apiKey: string;
   priority: number;     // 1 es más alta prioridad
   isActive: boolean;

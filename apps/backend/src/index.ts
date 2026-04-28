@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import { AiKeyCarousel } from './domain/ai-vault/AiKeyCarousel';
 import { PromptStrategyEngine } from './domain/ai-vault/PromptStrategy';
 import { publishQueue } from './infrastructure/scheduler/PublishQueue';
+import { getQueueMetrics } from './infrastructure/scheduler/QueueMetrics';
 
 dotenv.config();
 
@@ -83,6 +84,15 @@ app.post('/api/generate-and-publish', async (req, res) => {
       message: 'Posts generados y programados con éxito',
       variantsGenerated: variants
     });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/queue-status', async (req, res) => {
+  try {
+    const status = await getQueueMetrics();
+    res.json(status);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

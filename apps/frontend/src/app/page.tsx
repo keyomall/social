@@ -5,6 +5,8 @@ import { PublishEngine } from "@/components/dashboard/PublishEngine";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { SystemHealth } from "@/components/dashboard/SystemHealth";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ProfileAnalytics } from "@/components/dashboard/ProfileAnalytics";
+import { TrafficDashboard } from "@/components/dashboard/TrafficDashboard";
 
 export default function Home() {
   const { hasCompletedOnboarding } = useConfigStore();
@@ -28,11 +30,13 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-3 space-y-8">
               <PublishEngine />
+              <ProfileAnalytics />
             </div>
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 space-y-8">
               <SystemHealth />
+              <TrafficDashboard />
             </div>
           </div>
         </main>

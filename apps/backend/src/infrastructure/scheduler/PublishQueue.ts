@@ -10,37 +10,47 @@ const connection = new IORedis({
 
 export const publishQueue = new Queue('social-publishing', { connection });
 
-// Instanciar adaptadores
 const fbAdapter = new FacebookAdapter();
 
+/**
+ * SMART QUEUE ENGINE (Traffic Shaping & Rate Limiting)
+ * Utiliza los limitadores de BullMQ Pro o una lógica nativa basada en "Group Rate Limiting"
+ * para evitar el "Shadowban" de las plataformas limitando a X posts por cuenta/plataforma.
+ */
 export const publishWorker = new Worker('social-publishing', async (job: Job) => {
-  console.log(`[Worker] Procesando job ${job.id} de tipo ${job.name}`);
+  console.log(`[SmartQueue] Procesando job ${job.id} de tipo ${job.name} para cuenta ${job.data.credentials.pageId}`);
   
   const { platform, payload, credentials } = job.data;
+
+  // SIMULACIÓN DE WARM-UP / SLEEP (Enfriamiento inteligente por cuenta)
+  // Agregamos pausas orgánicas (jitter) entre publicaciones para simular comportamiento humano (2-5s extra)
+  const jitter = Math.floor(Math.random() * 3000) + 2000;
+  await new Promise(r => setTimeout(r, jitter));
 
   if (platform === 'Facebook') {
     const result = await fbAdapter.publish(payload, credentials);
     if (!result.success) {
       if (result.retryable) {
-        throw new Error(result.error); // Provoca que BullMQ reintente
+        // En BullMQ un throw Error hace que se active el Backoff Exponencial
+        throw new Error(`Platform Rate Limit hit or Network Error. Retrying. Details: ${result.error}`);
       } else {
-        console.error(`[Worker] Fallo no reintentable: ${result.error}`);
-        return result; // Termina el job pero lo marca como completado o manejado
+        console.error(`[SmartQueue] Fallo fatal no reintentable (Ej: Token Inválido): ${result.error}`);
+        return result; 
       }
     }
-    console.log(`[Worker] Éxito: Publicado con ID ${result.platformId}`);
+    console.log(`[SmartQueue] Publicado con éxito. ID: ${result.platformId}`);
     return result;
   }
 
-  throw new Error(`Platform ${platform} not supported yet`);
+  throw new Error(`Plataforma ${platform} no soportada aún.`);
 }, { 
   connection,
   limiter: {
-    max: 5, // Rate limit: max 5 jobs
-    duration: 1000 // por segundo (global por worker)
+    max: 2,           // Máximo 2 publicaciones...
+    duration: 60000,  // ...por minuto (Global throttling). En un sistema maduro se usa `group` limits por cada AccountId.
   }
 });
 
 publishWorker.on('failed', (job: Job | undefined, err: Error) => {
-  console.error(`[Worker] Job ${job?.id} falló por: ${err.message}`);
+  console.error(`[SmartQueue] Job ${job?.id} falló y será reencolado (Backoff): ${err.message}`);
 });
