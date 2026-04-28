@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Sparkles, TrendingUp, RefreshCcw, Layers } from "lucide-react";
 
+import { useConfigStore } from "@/store/useConfigStore";
+
 export function PublishEngine() {
   const [seedIdea, setSeedIdea] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [variants, setVariants] = useState<string[]>([]);
   const [strategy, setStrategy] = useState<string>("viral");
+  const { organizationId } = useConfigStore();
 
   const strategies = [
     { id: 'viral', name: 'Viral / Clickbait', icon: <Sparkles className="w-4 h-4" /> },
@@ -17,24 +20,40 @@ export function PublishEngine() {
     { id: 'trend', name: 'Trending Topic', icon: <TrendingUp className="w-4 h-4" /> },
   ];
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     setIsGenerating(true);
-    // Simula la llamada al AI Orchestrator (PromptStrategy + AiKeyCarousel)
-    setTimeout(() => {
-      setVariants([
-        `🔥 ¡NO VAS A CREER ESTO! 😱 La verdad sobre: ${seedIdea}. Hilo 🧵👇`,
-        `🚨 ÚLTIMA HORA: Todo lo que necesitas saber de ${seedIdea}. ¡Cambiaron las reglas! 🤯`,
-        `💡 Hack de vida revelado: ¿Cómo dominar ${seedIdea} en 2026? Te lo cuento en 3 pasos rápidos. 🚀`
-      ]);
+    try {
+      const res = await fetch("http://localhost:3001/api/generate-and-publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          seedIdea,
+          targetCount: 3,
+          pageId: "mock-page-id",
+          organizationId
+        })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Fallo en generación");
+      }
+
+      const data = await res.json();
+      setVariants(data.variantsGenerated || []);
+    } catch (err: any) {
+      console.error(err);
+      alert(`Error al generar: ${err.message}`);
+    } finally {
       setIsGenerating(false);
-    }, 2500);
+    }
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <Card className="md:col-span-1 shadow-sm border-slate-200">
+    <div className="flex flex-col gap-6">
+      <Card className="shadow-sm border-border/50 bg-card/50">
         <CardHeader>
-          <CardTitle className="text-lg">Motor Generativo</CardTitle>
+          <CardTitle className="text-lg">Idea Seed & Strategy</CardTitle>
           <CardDescription>Escribe una idea semilla y elige una estrategia.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -48,12 +67,12 @@ export function PublishEngine() {
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Estrategia Viral</label>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap gap-2">
               {strategies.map((strat) => (
                 <Button 
                   key={strat.id}
                   variant={strategy === strat.id ? "default" : "outline"}
-                  className="w-full justify-start gap-2"
+                  className="justify-start gap-2"
                   onClick={() => setStrategy(strat.id)}
                 >
                   {strat.icon} {strat.name}
@@ -64,34 +83,34 @@ export function PublishEngine() {
         </CardContent>
         <CardFooter>
           <Button 
-            className="w-full" 
+            className="w-fit" 
             disabled={!seedIdea || isGenerating}
             onClick={handleGenerate}
           >
             {isGenerating ? <RefreshCcw className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-            Generar Spintax
+            Generar Spintax (AI)
           </Button>
         </CardFooter>
       </Card>
 
-      <Card className="md:col-span-2 shadow-sm border-slate-200 bg-slate-50/50">
+      <Card className="shadow-sm border-border/50 bg-background">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Layers className="w-5 h-5 text-emerald-500" />
-            Resultados (Spintax AI)
+            Resultados Generados (Spintax)
           </CardTitle>
           <CardDescription>Variantes listas para encolarse y publicarse en múltiples cuentas.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {variants.length === 0 ? (
-            <div className="h-40 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-lg">
-              <p className="text-slate-400 text-sm">Esperando generación...</p>
+            <div className="h-32 flex items-center justify-center border-2 border-dashed border-border rounded-lg bg-card/30">
+              <p className="text-muted-foreground text-sm">Waiting for AI generation...</p>
             </div>
           ) : (
             variants.map((v, i) => (
-              <div key={i} className="p-4 bg-white rounded-lg shadow-sm border border-slate-200 flex justify-between items-start gap-4 hover:border-emerald-200 transition-colors">
-                <p className="text-sm text-slate-700 leading-relaxed">{v}</p>
-                <Button size="sm" variant="secondary" className="shrink-0 gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700">
+              <div key={i} className="p-4 bg-card rounded-lg shadow-sm border border-border/50 flex justify-between items-start gap-4 hover:border-emerald-500/50 transition-colors group">
+                <p className="text-sm text-foreground leading-relaxed">{v}</p>
+                <Button size="sm" variant="secondary" className="shrink-0 gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500">
                   <Send className="w-3 h-3" /> Encolar
                 </Button>
               </div>

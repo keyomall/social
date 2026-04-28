@@ -2,6 +2,9 @@
 import { useConfigStore } from "@/store/useConfigStore";
 import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow";
 import { PublishEngine } from "@/components/dashboard/PublishEngine";
+import { AppSidebar } from "@/components/layout/AppSidebar";
+import { SystemHealth } from "@/components/dashboard/SystemHealth";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function Home() {
   const { hasCompletedOnboarding } = useConfigStore();
@@ -11,23 +14,28 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <header className="flex justify-between items-center pb-6 border-b border-slate-200">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">SIAG Control Center</h1>
-            <p className="text-slate-500 mt-1">Motor Generativo de Autopublicación</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-            </span>
-            <span className="text-sm font-medium text-slate-600">Sistemas en línea</span>
-          </div>
+    <div className="flex w-full h-screen overflow-hidden">
+      <AppSidebar />
+      <div className="flex-1 overflow-y-auto relative bg-background">
+        <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b border-border/50 bg-background/80 px-4 backdrop-blur">
+          <SidebarTrigger />
+          <h1 className="text-sm font-semibold tracking-wide text-foreground">AuraSync Dashboard</h1>
         </header>
-
-        <PublishEngine />
+        <main className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-3xl font-bold tracking-tight">Generative Engine</h2>
+            <p className="text-muted-foreground">Transform seeds into viral campaigns instantly.</p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-3">
+              <PublishEngine />
+            </div>
+            <div className="lg:col-span-1">
+              <SystemHealth />
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );

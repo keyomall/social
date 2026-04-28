@@ -19,8 +19,10 @@ Este documento está diseñado para ser ingerido por cualquier modelo de Intelig
 Si el sistema colapsa o se requiere un setup en un entorno limpio:
 1. Clona el repositorio.
 2. Ejecuta `npm install` en la raíz.
-3. Levanta la infraestructura local: `docker-compose -f infrastructure/docker-compose.yml up -d`
-4. Ejecuta el entorno de desarrollo: `npm run dev --workspaces --if-present`
+3. Levanta la infraestructura local: `docker compose -f infrastructure/docker-compose.yml up -d`
+4. Inicializa Prisma: `cd apps/backend && npx prisma db push`
+5. Ejecuta el entorno de desarrollo: `npm run dev --workspaces --if-present`
+*Aviso Forense: Frontend = :3000, Backend = :3001. La persistencia es REAL. No usar Mocks para la generación.*
 
 ## Flujos Críticos a Proteger
 - **Onboarding Automático**: El usuario provee sus keys (OAuth o API), el sistema las valida en background y autoconfigura el `AiKeyCarousel` y los `SocialAdapters`.

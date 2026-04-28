@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SIAG - Sistema Inteligente de Autopublicación Generativa",
-  description: "Plataforma industrial para la automatización viral en redes sociales.",
+  title: "AuraSync - The Generative Publishing Engine",
+  description: "Sistema industrial de autopublicación viral y tracking multimodal con IA.",
 };
 
 export default function RootLayout({
@@ -16,10 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className="dark">
+      <body className={`${inter.className} bg-background text-foreground selection:bg-emerald-500/30`}>
         <TooltipProvider delay={200}>
-          {children}
+          <SidebarProvider>
+            {children}
+          </SidebarProvider>
         </TooltipProvider>
       </body>
     </html>

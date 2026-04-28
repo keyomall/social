@@ -13,18 +13,34 @@ export function OnboardingFlow() {
   const [openRouterKey, setOpenRouterKey] = useState("");
   const [isValidating, setIsValidating] = useState(false);
   const [success, setSuccess] = useState(false);
-  const { setHasCompletedOnboarding } = useConfigStore();
+  const { setHasCompletedOnboarding, organizationId } = useConfigStore();
 
   const handleValidate = async () => {
     setIsValidating(true);
-    // Simular validación backend industrial (ping a la API)
-    setTimeout(() => {
+    try {
+      const res = await fetch("http://localhost:3001/api/keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider: "OPENROUTER",
+          apiKey: openRouterKey,
+          organizationId
+        })
+      });
+
+      if (!res.ok) throw new Error("API validation failed");
+      
       setIsValidating(false);
       setSuccess(true);
       setTimeout(() => {
         setStep(2);
       }, 1500);
-    }, 2000);
+    } catch (err) {
+      console.error(err);
+      setIsValidating(false);
+      // Fallback para visualización si el backend no está (solo en dev)
+      alert("Error conectando al backend. Asegúrate de que Express corre en el puerto 3001.");
+    }
   };
 
   const finishSetup = () => {

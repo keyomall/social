@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  keys      AiKey[]
+  posts     Post[]
+}
+
+model AiKey {
+  id             String       @id @default(uuid())
+  provider       String       // Ej: OPENROUTER, OPENAI
+  apiKey         String       // Debería estar encriptada en una db real
+  priority       Int          @default(1)
+  isActive       Boolean      @default(true)
+  isExhausted    Boolean      @default(false)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Post {
+  id             String       @id @default(uuid())
+  content        String       
+  mediaUrls      String       @default("[]") // JSON array de imágenes/video
+  status         String       @default("DRAFT") // DRAFT, SCHEDULED, PUBLISHED, FAILED
+  scheduledTime  DateTime?
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
