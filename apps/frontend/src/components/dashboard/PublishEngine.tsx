@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Sparkles, TrendingUp, RefreshCcw, Layers, Newspaper, ShieldCheck, HeartHandshake, PenTool } from "lucide-react";
+import { Send, Sparkles, TrendingUp, RefreshCcw, Layers, Newspaper, ShieldCheck, HeartHandshake, PenTool, Camera as InstagramIcon, Video, MessageCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
@@ -78,7 +78,7 @@ export function PublishEngine() {
         <CardContent className="space-y-4">
           <div className="space-y-2 mb-4">
             <label className="text-sm font-medium">Redes Destino</label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button size="sm" variant={platforms.includes("Facebook") ? "default" : "outline"} onClick={() => togglePlatform("Facebook")}>
                 Facebook
               </Button>
@@ -88,8 +88,27 @@ export function PublishEngine() {
               <Button size="sm" variant={platforms.includes("Twitter") ? "default" : "outline"} onClick={() => togglePlatform("Twitter")}>
                 Twitter (X)
               </Button>
+              <Button size="sm" variant={platforms.includes("Instagram") ? "default" : "outline"} onClick={() => togglePlatform("Instagram")}>
+                <InstagramIcon className="w-4 h-4 mr-2" /> Instagram
+              </Button>
+              <Button size="sm" variant={platforms.includes("TikTok") ? "default" : "outline"} onClick={() => togglePlatform("TikTok")}>
+                <Video className="w-4 h-4 mr-2" /> TikTok
+              </Button>
+              <Button size="sm" variant={platforms.includes("WhatsApp") ? "default" : "outline"} onClick={() => togglePlatform("WhatsApp")}>
+                <MessageCircle className="w-4 h-4 mr-2" /> WhatsApp
+              </Button>
             </div>
             {platforms.length === 0 && <p className="text-xs text-red-500">Selecciona al menos una red.</p>}
+            {(platforms.includes("Instagram") || platforms.includes("TikTok")) && (
+              <p className="text-xs text-amber-500 bg-amber-500/10 p-2 rounded-md border border-amber-500/20">
+                <b>Nota:</b> Instagram y TikTok requieren contenido multimedia. Asegúrate de anexar medios (Fotos/Videos) o la API de la red rechazará la solicitud.
+              </p>
+            )}
+            {platforms.includes("WhatsApp") && (
+              <p className="text-xs text-amber-500 bg-amber-500/10 p-2 rounded-md border border-amber-500/20">
+                <b>Atención (WhatsApp):</b> Evita hacer 'Broadcasts' manuales masivos para no comprometer el número. El Smart Queue aplicará Jitter extremo automáticamente.
+              </p>
+            )}
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

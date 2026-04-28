@@ -3,6 +3,9 @@ import IORedis from 'ioredis';
 import { FacebookAdapter } from '../../domain/adapters/FacebookAdapter';
 import { LinkedInAdapter } from '../../domain/adapters/LinkedInAdapter';
 import { TwitterAdapter } from '../../domain/adapters/TwitterAdapter';
+import { InstagramAdapter } from '../../domain/adapters/InstagramAdapter';
+import { TikTokAdapter } from '../../domain/adapters/TikTokAdapter';
+import { WhatsAppAdapter } from '../../domain/adapters/WhatsAppAdapter';
 
 const connection = new IORedis({
   host: process.env.REDIS_HOST || 'localhost',
@@ -15,7 +18,10 @@ export const publishQueue = new Queue('social-publishing', { connection });
 const adapters = {
   'Facebook': new FacebookAdapter(),
   'LinkedIn': new LinkedInAdapter(),
-  'Twitter': new TwitterAdapter()
+  'Twitter': new TwitterAdapter(),
+  'Instagram': new InstagramAdapter(),
+  'TikTok': new TikTokAdapter(),
+  'WhatsApp': new WhatsAppAdapter()
 };
 
 /**
