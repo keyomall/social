@@ -38,12 +38,15 @@ app.post('/api/keys', async (req, res) => {
 
 app.post('/api/generate-and-publish', async (req, res) => {
   try {
-    const { seedIdea, targetCount, pageId, organizationId, targetPlatforms, strategy } = req.body;
+    const { seedIdea, targetCount, pageId, organizationId, targetPlatforms, strategy, customPrompt } = req.body;
     
-    // Obtener keys de DB real
-    const keys = await prisma.aiKey.findMany({ where: { organizationId, isActive: true } });
-    if (keys.length === 0) {
-      return res.status(400).json({ error: "No hay API keys activas para esta organización." });
+    // Obtener keys de DB real si NO estamos en modo manual
+    let keys: any[] = [];
+    if (strategy !== 'manual') {
+      keys = await prisma.aiKey.findMany({ where: { organizationId, isActive: true } });
+      if (keys.length === 0) {
+        return res.status(400).json({ error: "No hay API keys activas para esta organización." });
+      }
     }
 
     const carousel = new AiKeyCarousel(keys.map(k => ({
@@ -52,8 +55,8 @@ app.post('/api/generate-and-publish', async (req, res) => {
     })));
     const aiEngine = new PromptStrategyEngine(carousel);
 
-    // 1. Generar Variantes
-    const variants = await aiEngine.generateViralPosts(seedIdea, targetCount);
+    // 1. Generar Variantes o Bypass si es manual
+    const variants = await aiEngine.generateViralPosts(seedIdea, targetCount, strategy, customPrompt);
     
     // 2. Guardar en DB y Encolar para publicación
     // Encolamos en TODAS las plataformas que el usuario haya seleccionado en UI

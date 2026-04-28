@@ -8,11 +8,18 @@ export class PromptStrategyEngine {
    * Generación de contenido usando la Key del Carousel mediante llamada HTTP Real a DeepSeek/OpenRouter.
    * Si la API Key proporcionada es el Mock por defecto ('sk-...mock...'), hará bypass para no fallar.
    */
-  public async generateViralPosts(seedIdea: string, targetCount: number = 3, strategy: string = 'viral'): Promise<string[]> {
+  public async generateViralPosts(seedIdea: string, targetCount: number = 3, strategy: string = 'viral', customPrompt?: string): Promise<string[]> {
     let currentKey = this.carousel.getAvailableKey();
     
+    // Si la estrategia es "manual", el contenido (seedIdea) ya es el texto final que el usuario quiere encolar.
+    // Saltamos la IA y retornamos el texto directamente.
+    if (strategy === 'manual') {
+      console.log(`[PromptStrategyEngine] Modo MANUAL activado. Saltando IA...`);
+      return [seedIdea];
+    }
+
     if (!currentKey) {
-      throw new Error("No hay llaves de IA disponibles en el carrusel.");
+      throw new Error("No hay llaves de IA disponibles en el carrusel y el modo no es manual.");
     }
 
     console.log(`[PromptStrategyEngine] Llamando a API (${currentKey.provider}) con seed: "${seedIdea}"...`);
@@ -22,7 +29,8 @@ export class PromptStrategyEngine {
       'news': 'Actúa como un periodista. Escribe la noticia de manera objetiva, urgente y clara.',
       'thread': 'Actúa como un educador en Twitter. Desglosa la idea en puntos claros y fáciles de leer.',
       'pr': 'Actúa como un director de Relaciones Públicas. Tono corporativo y profesional para un comunicado.',
-      'branding': 'Actúa como un Brand Manager. Enfócate en los valores, la misión y la empatía de la marca.'
+      'branding': 'Actúa como un Brand Manager. Enfócate en los valores, la misión y la empatía de la marca.',
+      'custom': customPrompt || 'Actúa como un asistente útil y genera variaciones del texto.'
     };
     
     const systemPrompt = strategyContexts[strategy] || strategyContexts['viral'];
