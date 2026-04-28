@@ -38,7 +38,7 @@ app.post('/api/keys', async (req, res) => {
 
 app.post('/api/generate-and-publish', async (req, res) => {
   try {
-    const { seedIdea, targetCount, pageId, organizationId } = req.body;
+    const { seedIdea, targetCount, pageId, organizationId, targetPlatforms, strategy } = req.body;
     
     // Obtener keys de DB real
     const keys = await prisma.aiKey.findMany({ where: { organizationId, isActive: true } });
@@ -56,6 +56,9 @@ app.post('/api/generate-and-publish', async (req, res) => {
     const variants = await aiEngine.generateViralPosts(seedIdea, targetCount);
     
     // 2. Guardar en DB y Encolar para publicación
+    // Encolamos en TODAS las plataformas que el usuario haya seleccionado en UI
+    const platformsToQueue = Array.isArray(targetPlatforms) && targetPlatforms.length > 0 ? targetPlatforms : ['Facebook'];
+
     for (const content of variants) {
       const post = await prisma.post.create({
         data: {
@@ -65,18 +68,20 @@ app.post('/api/generate-and-publish', async (req, res) => {
         }
       });
 
-      try {
-        await publishQueue.add('publish-post', {
-          platform: 'Facebook',
-          payload: { content },
-          credentials: { pageId },
-          postId: post.id
-        }, {
-          attempts: 3,
-          backoff: { type: 'exponential', delay: 2000 }
-        });
-      } catch (err) {
-        console.error("Queue add error (ignoring for SQLite fallback):", err);
+      for (const platform of platformsToQueue) {
+        try {
+          await publishQueue.add('publish-post', {
+            platform,
+            payload: { content },
+            credentials: { pageId },
+            postId: post.id
+          }, {
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 2000 }
+          });
+        } catch (err) {
+          console.error(`Queue add error for ${platform} (ignoring for SQLite fallback):`, err);
+        }
       }
     }
 

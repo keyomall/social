@@ -1,6 +1,8 @@
 import { Queue, Worker, Job } from 'bullmq';
 import IORedis from 'ioredis';
 import { FacebookAdapter } from '../../domain/adapters/FacebookAdapter';
+import { LinkedInAdapter } from '../../domain/adapters/LinkedInAdapter';
+import { TwitterAdapter } from '../../domain/adapters/TwitterAdapter';
 
 const connection = new IORedis({
   host: process.env.REDIS_HOST || 'localhost',
@@ -10,7 +12,11 @@ const connection = new IORedis({
 
 export const publishQueue = new Queue('social-publishing', { connection });
 
-const fbAdapter = new FacebookAdapter();
+const adapters = {
+  'Facebook': new FacebookAdapter(),
+  'LinkedIn': new LinkedInAdapter(),
+  'Twitter': new TwitterAdapter()
+};
 
 /**
  * SMART QUEUE ENGINE (Traffic Shaping & Rate Limiting)
@@ -27,22 +33,25 @@ export const publishWorker = new Worker('social-publishing', async (job: Job) =>
   const jitter = Math.floor(Math.random() * 3000) + 2000;
   await new Promise(r => setTimeout(r, jitter));
 
-  if (platform === 'Facebook') {
-    const result = await fbAdapter.publish(payload, credentials);
-    if (!result.success) {
-      if (result.retryable) {
-        // En BullMQ un throw Error hace que se active el Backoff Exponencial
-        throw new Error(`Platform Rate Limit hit or Network Error. Retrying. Details: ${result.error}`);
-      } else {
-        console.error(`[SmartQueue] Fallo fatal no reintentable (Ej: Token Inválido): ${result.error}`);
-        return result; 
-      }
-    }
-    console.log(`[SmartQueue] Publicado con éxito. ID: ${result.platformId}`);
-    return result;
+  const adapter = adapters[platform as keyof typeof adapters];
+  
+  if (!adapter) {
+    throw new Error(`Plataforma ${platform} no soportada aún.`);
   }
 
-  throw new Error(`Plataforma ${platform} no soportada aún.`);
+  const result = await adapter.publish(payload, credentials);
+  if (!result.success) {
+    if (result.retryable) {
+      // En BullMQ un throw Error hace que se active el Backoff Exponencial
+      throw new Error(`Platform Rate Limit hit or Network Error. Retrying. Details: ${result.error}`);
+    } else {
+      console.error(`[SmartQueue] Fallo fatal no reintentable (Ej: Token Inválido): ${result.error}`);
+      return result; 
+    }
+  }
+  
+  console.log(`[SmartQueue] Publicado con éxito en ${platform}. ID: ${result.platformId}`);
+  return result;
 }, { 
   connection,
   limiter: {
