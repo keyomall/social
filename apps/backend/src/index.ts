@@ -6,6 +6,8 @@ import { AiKeyCarousel } from './domain/ai-vault/AiKeyCarousel';
 import { PromptStrategyEngine } from './domain/ai-vault/PromptStrategy';
 import { publishQueue } from './infrastructure/scheduler/PublishQueue';
 import { getQueueMetrics } from './infrastructure/scheduler/QueueMetrics';
+import mediaRoutes from './routes/media';
+import path from 'path';
 
 dotenv.config();
 
@@ -14,6 +16,12 @@ const prisma = new PrismaClient();
 
 app.use(cors());
 app.use(express.json());
+
+// Servir archivos estáticos de uploads
+app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+
+// Rutas
+app.use('/api/media', mediaRoutes);
 
 const PORT = process.env.PORT || 3001;
 

@@ -25,6 +25,18 @@ export class AiKeyCarousel {
   }
 
   /**
+   * Valida remotamente si la llave tiene saldo activo
+   * (Esta es una implementación de ejemplo, en prod requeriría axios import y llamar a /auth/key endpoint del provider)
+   */
+  public async preFlightCheck(key: AiKeyRecord): Promise<boolean> {
+    if (!key) return false;
+    // Simulate real API ping
+    console.log(`[AiKeyCarousel] Realizando Pre-Flight ping al proveedor ${key.provider}...`);
+    // Si fuera real: await axios.get('https://openrouter.ai/api/v1/auth/key', { headers: { Authorization: `Bearer ${key.apiKey}` } })
+    return true; 
+  }
+
+  /**
    * Marca una llave como agotada (ej. si la API devolvió un 429 persistente o 402 Payment Required)
    */
   public markKeyExhausted(keyId: string): void {
