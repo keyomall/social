@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useConfigStore } from "@/store/useConfigStore";
+import { apiPost } from "@/lib/api-client";
 
 export function PublishEngine() {
   const [activeTab, setActiveTab] = useState("ai");
@@ -18,6 +19,10 @@ export function PublishEngine() {
   const [variants, setVariants] = useState<string[]>([]);
   const [strategy, setStrategy] = useState<string>("viral");
   const [platforms, setPlatforms] = useState<string[]>(["Facebook"]);
+  const [mediaUrlsInput, setMediaUrlsInput] = useState("");
+  const [socialCredentialsJson, setSocialCredentialsJson] = useState("");
+  const [queueSummary, setQueueSummary] = useState<{ queued: number; failed: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { organizationId } = useConfigStore();
 
   const togglePlatform = (platform: string) => {
@@ -38,31 +43,36 @@ export function PublishEngine() {
 
   const handleGenerate = async () => {
     setIsGenerating(true);
+    setError(null);
+    setQueueSummary(null);
     try {
-      const res = await fetch("http://localhost:3001/api/generate-and-publish", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          seedIdea: activeTab === 'manual' ? manualText : seedIdea,
-          targetCount: activeTab === 'manual' ? 1 : 3,
-          pageId: "mock-page-id",
-          organizationId,
-          targetPlatforms: platforms,
-          strategy: activeTab === 'manual' ? 'manual' : strategy,
-          customPrompt: strategy === 'custom' ? customPrompt : undefined
-        })
-      });
+      const mediaAssets = mediaUrlsInput
+        .split(",")
+        .map((url) => url.trim())
+        .filter(Boolean)
+        .map((url) => ({ url, type: "image" as const }));
+      const socialCredentials = socialCredentialsJson.trim()
+        ? JSON.parse(socialCredentialsJson)
+        : undefined;
 
-      if (!res.ok) {
-        const errData = await res.json();
-        throw new Error(errData.error || "Fallo en generación");
-      }
-
-      const data = await res.json();
+      const data = await apiPost<{ variantsGenerated: string[]; queueSummary?: { queued: number; failed: number } }>(
+        "/api/generate-and-publish",
+        {
+        seedIdea: activeTab === 'manual' ? manualText : seedIdea,
+        targetCount: activeTab === 'manual' ? 1 : 3,
+        pageId: "mock-page-id",
+        organizationId,
+        targetPlatforms: platforms,
+        strategy: activeTab === 'manual' ? 'manual' : strategy,
+          customPrompt: strategy === 'custom' ? customPrompt : undefined,
+          mediaAssets,
+          socialCredentials,
+        },
+      );
       setVariants(data.variantsGenerated || []);
+      setQueueSummary(data.queueSummary || null);
     } catch (err: any) {
-      console.error(err);
-      alert(`Error al generar: ${err.message}`);
+      setError(err.message || "Error al generar publicaciones");
     } finally {
       setIsGenerating(false);
     }
@@ -76,6 +86,11 @@ export function PublishEngine() {
           <CardDescription>Crea tus publicaciones usando la Inteligencia Artificial (Spintax) o redacta de manera manual si no tienes créditos o conexión IA.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {error && (
+            <div className="text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md p-2">
+              {error}
+            </div>
+          )}
           <div className="space-y-2 mb-4">
             <label className="text-sm font-medium">Redes Destino</label>
             <div className="flex flex-wrap gap-2">
@@ -109,6 +124,31 @@ export function PublishEngine() {
                 <b>Atención (WhatsApp):</b> Evita hacer 'Broadcasts' manuales masivos para no comprometer el número. El Smart Queue aplicará Jitter extremo automáticamente.
               </p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Media URLs (opcional, separadas por coma)</label>
+            <Input
+              placeholder="https://.../imagen1.jpg, https://.../video1.mp4"
+              value={mediaUrlsInput}
+              onChange={(e) => setMediaUrlsInput(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Recomendado para Instagram/TikTok. Si no envías media, esas plataformas pueden rechazar la publicación.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Credenciales por red (JSON opcional)</label>
+            <Textarea
+              className="min-h-[90px]"
+              placeholder='{"Facebook":{"accessToken":"...","pageId":"..."}, "Twitter":{"accessToken":"..."}}'
+              value={socialCredentialsJson}
+              onChange={(e) => setSocialCredentialsJson(e.target.value)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Si está vacío, el backend usará fallback básico (`pageId`) y algunas redes pueden fallar.
+            </p>
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -177,6 +217,11 @@ export function PublishEngine() {
 
         </CardContent>
         <CardFooter>
+          {queueSummary && (
+            <div className="mr-4 text-xs text-muted-foreground">
+              Cola: {queueSummary.queued} encolados, {queueSummary.failed} fallidos.
+            </div>
+          )}
           {activeTab === 'ai' ? (
             <Button 
               className="w-fit" 

@@ -95,6 +95,9 @@ model Post {
   content        String       
   mediaUrls      String       @default("[]") // JSON array de imágenes/video
   status         String       @default("DRAFT") // DRAFT, SCHEDULED, PUBLISHED, FAILED
+  platform       String?
+  platformPostId String?
+  lastError      String?
   scheduledTime  DateTime?
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id])
