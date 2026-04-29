@@ -3,31 +3,41 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ArrowUpRight, ArrowDownRight, Users, Eye, MousePointerClick, Share2 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { useConfigStore } from '@/store/useConfigStore';
+import { apiGet } from '@/lib/api-client';
+
+interface AnalyticsPoint {
+  name: string;
+  views: number;
+  clicks: number;
+  shares: number;
+}
 
 export function AnalyticsDashboard() {
   const [timeRange, setTimeRange] = useState('7d');
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<AnalyticsPoint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { organizationId } = useConfigStore();
 
   React.useEffect(() => {
-    const organizationId = 'default-org-id'; 
     setIsLoading(true);
-    fetch(`http://localhost:3001/api/analytics?organizationId=${organizationId}&timeRange=${timeRange}`)
-      .then(res => res.json())
+    apiGet<{ success: boolean; data: AnalyticsPoint[] }>(`/api/analytics?organizationId=${organizationId}&timeRange=${timeRange}`)
       .then(result => {
         if (result.success && result.data.length > 0) {
           setData(result.data);
         } else {
           setData([{ name: 'Sin datos', views: 0, clicks: 0, shares: 0 }]);
         }
-        setIsLoading(false);
       })
       .catch(err => {
         console.error('Error fetching analytics:', err);
+        setData([{ name: 'Sin datos', views: 0, clicks: 0, shares: 0 }]);
+      })
+      .finally(() => {
         setIsLoading(false);
       });
-  }, [timeRange]);
+  }, [organizationId, timeRange]);
 
   return (
     <div className="space-y-6 mt-8">

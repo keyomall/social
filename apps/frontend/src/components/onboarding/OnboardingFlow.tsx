@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useConfigStore } from "@/store/useConfigStore";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { KeyRound, CheckCircle2, Loader2, Info } from "lucide-react";
+import { apiPost } from "@/lib/api-client";
 
 export function OnboardingFlow() {
   const [step, setStep] = useState(1);
@@ -14,33 +15,27 @@ export function OnboardingFlow() {
   const [apiKey, setApiKey] = useState("");
   const [isValidating, setIsValidating] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { setHasCompletedOnboarding, organizationId } = useConfigStore();
 
   const handleValidate = async () => {
     setIsValidating(true);
+    setError(null);
     try {
-      const res = await fetch("http://localhost:3001/api/keys", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          provider,
-          apiKey,
-          organizationId
-        })
+      await apiPost<{ success: boolean; keyId: string }>("/api/keys", {
+        provider,
+        apiKey,
+        organizationId,
       });
-
-      if (!res.ok) throw new Error("API validation failed");
       
       setIsValidating(false);
       setSuccess(true);
       setTimeout(() => {
         setStep(2);
       }, 1500);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
       setIsValidating(false);
-      // Fallback para visualización si el backend no está (solo en dev)
-      alert("Error conectando al backend. Asegúrate de que Express corre en el puerto 3001.");
+      setError(err.message || "No se pudo validar la API Key.");
     }
   };
 
@@ -110,6 +105,11 @@ export function OnboardingFlow() {
                     />
                   </div>
                 </div>
+                {error && (
+                  <p className="text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md p-2">
+                    {error}
+                  </p>
+                )}
               </CardContent>
               <CardFooter>
                 <Button 

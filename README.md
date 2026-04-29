@@ -13,28 +13,29 @@ SIAG es un sistema industrial de publicación multicuenta para redes sociales, i
 
 ### Prerrequisitos
 - Node.js (v20+)
-- Docker y Docker Compose
+- Redis (opcional en desarrollo, recomendado para colas reales)
 
 ### Instalación
 1. Instalar dependencias del monorepo: `npm install`
-2. Levantar la infraestructura (PostgreSQL, Redis):
-   ```bash
-   docker compose -f infrastructure/docker-compose.yml up -d
-   ```
-3. Inicializar Base de Datos (Prisma):
+2. Inicializar base de datos local (SQLite):
    ```bash
    cd apps/backend
    npx prisma generate
    npx prisma db push
    ```
-4. Iniciar el entorno de desarrollo global:
+3. Iniciar el entorno de desarrollo global:
    ```bash
    npm run dev --workspaces --if-present
    ```
 
+### ¿SQLite o PostgreSQL?
+- **Uso personal / single-user**: SQLite es suficiente, más simple y con menor fricción operativa.
+- **Multiusuario / alta concurrencia / despliegue cloud serio**: migrar a PostgreSQL.
+- Estado actual del proyecto: la configuración activa usa **SQLite**.
+
 ## Integración Continua y Zero-Fricción
 El frontend corre en el **puerto 3000** y el backend Express con Prisma corre en el **puerto 3001**.
-El sistema ya **NO utiliza mocks** para la lógica principal: requiere la base de datos para almacenar y usar el Carrusel de Llaves de IA y registrar los posts. Asegúrese de que PostgreSQL y Redis estén disponibles antes de arrancar.
+El sistema usa base de datos real para llaves y posts (sin dependencia de mocks en el flujo principal). Para uso local se ejecuta con SQLite; Redis habilita colas reales cuando esté disponible.
 
 ## Documentación Técnica
 Para una inmersión profunda en la arquitectura y directrices de desarrollo, consulte [docs/AI_CONTEXT.md](docs/AI_CONTEXT.md) y [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).

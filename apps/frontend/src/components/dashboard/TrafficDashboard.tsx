@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Gauge, ArrowRightLeft, ShieldAlert } from "lucide-react";
-import { motion } from "framer-motion";
+import { Gauge, ShieldAlert } from "lucide-react";
+import { apiGet } from "@/lib/api-client";
 
 interface QueueStatus {
   metrics: { waiting: number, active: number, completed: number, failed: number, delayed: number };
@@ -15,11 +15,8 @@ export function TrafficDashboard() {
 
   const fetchStatus = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/queue-status");
-      if (res.ok) {
-        const data = await res.json();
-        setStatus(data);
-      }
+      const data = await apiGet<QueueStatus>("/api/queue-status");
+      setStatus(data);
     } catch (err) {
       console.error(err);
     }
@@ -31,7 +28,19 @@ export function TrafficDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  if (!status) return null;
+  if (!status) {
+    return (
+      <Card className="shadow-sm border-border/50 bg-card/50">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Gauge className="w-5 h-5 text-emerald-500" />
+            Control de Tráfico (Anti-Ban)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">Cargando estado de cola...</CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="shadow-sm border-border/50 bg-card/50">

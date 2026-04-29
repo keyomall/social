@@ -3,10 +3,12 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BrainCircuit, LineChart, Users, Eye, ArrowUpRight, Sparkles } from "lucide-react";
+import { apiPost } from "@/lib/api-client";
 
 export function ProfileAnalytics() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [diagnostic, setDiagnostic] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Mocks de perfiles conectados para la UI visual
   const profiles = [
@@ -16,21 +18,13 @@ export function ProfileAnalytics() {
 
   const handleDiagnostic = async () => {
     setIsAnalyzing(true);
+    setError(null);
     try {
-      const res = await fetch("http://localhost:3001/api/analyze-profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profiles })
-      });
-      
-      if (!res.ok) throw new Error("Error en el análisis IA");
-      
-      const data = await res.json();
+      const data = await apiPost<{ recommendation: string }>("/api/analyze-profile", { profiles });
       setDiagnostic(data.recommendation);
     } catch (err: any) {
-      console.error(err);
-      // Fallback UI si no levantan el backend
-      setDiagnostic("Diagnóstico de contingencia: El perfil de LinkedIn tiene el doble de engagement relativo (8.1%) respecto a Facebook. Se sugiere migrar el 30% del presupuesto de pauta de FB hacia la creación de contenido orgánico en LinkedIn, enfocándose en 'Posicionamiento de Marca'.");
+      setDiagnostic(null);
+      setError(err.message || "No fue posible generar el diagnóstico.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -87,6 +81,12 @@ export function ProfileAnalytics() {
             </Button>
           </div>
           
+          {error && (
+            <div className="w-full p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
+              {error}
+            </div>
+          )}
+
           {diagnostic && (
             <div className="w-full p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-sm text-foreground leading-relaxed">
               <h5 className="font-bold text-indigo-400 mb-2 flex items-center gap-2">
