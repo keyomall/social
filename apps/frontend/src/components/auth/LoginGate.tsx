@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,10 @@ export function LoginGate() {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md border-slate-200 shadow-xl">
         <CardHeader className="space-y-1">
+          <div className="mb-2 flex items-center gap-3">
+            <Image src="/keryx-logo.png" alt="KERYX logo" width={32} height={32} className="h-8 w-8 object-contain" priority />
+            <span className="text-sm font-semibold tracking-wider text-muted-foreground">KERYX / SIAG</span>
+          </div>
           <CardTitle className="text-2xl font-bold tracking-tight">Acceso Seguro</CardTitle>
           <CardDescription>Inicia sesión para operar el panel con RBAC estricto.</CardDescription>
         </CardHeader>

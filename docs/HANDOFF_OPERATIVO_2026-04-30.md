@@ -11,6 +11,7 @@ Entregar contexto tecnico completo, verificable y accionable para que cualquier 
 - Frontend en `http://localhost:3000`.
 - Espanol por defecto confirmado (`<html lang="es">`).
 - RBAC estricto confirmado: endpoint protegido sin `x-user-email` responde `401`.
+- Logo oficial disponible y servido en frontend: `/keryx-logo.png`.
 
 ## Auditoria de Residuos y Obsolescencia
 - Busqueda en `apps/` y `docs/` de: `AuraSync|legacy|obsoleto|deprecated|TODO|FIXME|HACK`.
@@ -30,6 +31,15 @@ Entregar contexto tecnico completo, verificable y accionable para que cualquier 
 - No bloquea funcionamiento local validado, pero debe cerrarse para despliegues consistentes.
 
 ## Runbook de Continuidad (Siguiente Operador)
+Opcion recomendada en Windows (arranque recuperable automatizado):
+- `npm run dev:recover`
+
+Esta opcion:
+- libera puertos 3000/3001,
+- sincroniza Prisma en backend,
+- levanta backend estricto y frontend en terminales separadas.
+
+Opcion manual:
 1. Ejecutar `npm install`.
 2. Copiar variables: `Copy-Item .env.example .env`.
 3. Inicializar prisma backend:

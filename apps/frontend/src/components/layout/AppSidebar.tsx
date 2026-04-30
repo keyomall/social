@@ -1,5 +1,6 @@
 "use client";
-import { ShieldAlert, Activity, Sparkles, Layers, Settings2, BarChart3 } from "lucide-react";
+import Image from "next/image";
+import { Activity, Sparkles, Layers, Settings2, BarChart3 } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { useI18n } from "@/components/providers/I18nProvider";
 
@@ -10,8 +11,8 @@ export function AppSidebar() {
     <Sidebar variant="inset" className="border-r border-border/50">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-            <Sparkles className="w-4 h-4 text-emerald-400" />
+          <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 overflow-hidden">
+            <Image src="/keryx-logo.png" alt="KERYX logo" width={24} height={24} className="h-6 w-6 object-contain" priority />
           </div>
           <div className="flex flex-col">
             <span className="font-bold tracking-wider text-sm text-foreground">KERYX</span>

@@ -25,6 +25,12 @@ Documento de continuidad para IA y desarrolladores humanos. Es la referencia de 
 5. **No degradar i18n**: conservar espanol por defecto y selector `Espanol/Ingles`.
 
 ## Bootstrap y Recuperacion Rapida
+Opcion recomendada en Windows:
+- `npm run dev:recover`
+
+La opcion recomendada limpia puertos, sincroniza Prisma y levanta backend/frontend automaticamente.
+
+Opcion manual:
 1. `npm install`
 2. `Copy-Item .env.example .env` (PowerShell)
 3. `cd apps/backend`

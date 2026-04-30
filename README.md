@@ -32,6 +32,7 @@ KERYX (núcleo SIAG) es un sistema industrial de publicación multicuenta para r
    ```bash
    npm run dev --workspaces --if-present
    ```
+   En Windows, para recuperación automática (limpia puertos 3000/3001, sincroniza Prisma y levanta backend/frontend): `npm run dev:recover`
 
 ### ¿SQLite o PostgreSQL?
 - **Uso personal / single-user**: SQLite es suficiente, más simple y con menor fricción operativa.

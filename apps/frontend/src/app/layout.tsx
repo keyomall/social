@@ -11,6 +11,11 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "KERYX - Sistema Inteligente de Publicación",
   description: "Plataforma inteligente de generación, publicación y analítica multicanal en español.",
+  icons: {
+    icon: "/keryx-logo.png",
+    shortcut: "/keryx-logo.png",
+    apple: "/keryx-logo.png",
+  },
 };
 
 export default function RootLayout({

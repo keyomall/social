@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useConfigStore } from "@/store/useConfigStore";
 import { LoginGate } from "@/components/auth/LoginGate";
@@ -56,7 +57,10 @@ export default function Home() {
       <div className="flex-1 overflow-y-auto relative bg-background">
         <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b border-border/50 bg-background/80 px-4 backdrop-blur">
           <SidebarTrigger />
-          <h1 className="text-sm font-semibold tracking-wide text-foreground">Panel KERYX</h1>
+          <div className="flex items-center gap-2">
+            <Image src="/keryx-logo.png" alt="KERYX logo" width={20} height={20} className="h-5 w-5 object-contain" />
+            <h1 className="text-sm font-semibold tracking-wide text-foreground">Panel KERYX</h1>
+          </div>
           <div className="ml-auto flex items-center gap-2">
             <button
               type="button"

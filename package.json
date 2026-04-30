@@ -13,6 +13,7 @@
     "test": "npm run test --workspaces --if-present",
     "e2e": "npm run e2e --workspace frontend",
     "verify:strict": "npm run test && npm run e2e && npm run build",
+    "dev:recover": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/start-system.ps1",
     "dev:backend:strict": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$env:ENFORCE_RBAC='true'; $env:OTEL_ENABLED='true'; $env:OTEL_SERVICE_NAME='siag-backend'; $env:OTEL_SERVICE_VERSION='1.0.0'; $env:OTEL_EXPORTER_OTLP_TRACES_ENDPOINT='http://localhost:4318/v1/traces'; npm run dev --workspace backend\"",
     "obs:up": "docker compose -f infrastructure/observability/docker-compose.yml up -d",
     "obs:down": "docker compose -f infrastructure/observability/docker-compose.yml down"
