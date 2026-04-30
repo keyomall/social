@@ -1,5 +1,7 @@
 # Arquitectura del Sistema Inteligente de Autopublicación Generativa (SIAG)
 
+> Nota de vigencia: este documento mezcla arquitectura actual y visión evolutiva. Para estado operativo confirmado, use `docs/HANDOFF_OPERATIVO_2026-04-30.md` y `docs/AI_CONTEXT.md`.
+
 ## Diagrama Lógico de Arquitectura
 
 El sistema se divide en las siguientes capas y componentes modulares:

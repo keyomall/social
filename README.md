@@ -71,3 +71,4 @@ El sistema usa base de datos real para llaves y posts (sin dependencia de mocks 
 
 ## Documentación Técnica
 Para una inmersión profunda en la arquitectura y directrices de desarrollo, consulte [docs/AI_CONTEXT.md](docs/AI_CONTEXT.md) y [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+Para continuidad operativa inmediata y estado validado de cierre, consulte [docs/HANDOFF_OPERATIVO_2026-04-30.md](docs/HANDOFF_OPERATIVO_2026-04-30.md).

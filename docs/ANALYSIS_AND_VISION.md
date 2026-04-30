@@ -1,5 +1,7 @@
 # Análisis Forense y Visión Evolucionada del Sistema de Publicación Multicuenta
 
+> Nota de vigencia: este documento contiene analisis historico y hoja de ruta aspiracional. Para continuidad operativa real, priorice `docs/HANDOFF_OPERATIVO_2026-04-30.md` y `docs/AI_CONTEXT.md`.
+
 ## 1. Crítica Forense del Planteamiento Original
 
 El planteamiento inicial, si bien robusto en términos de ingeniería clásica (separación de responsabilidades, clean architecture, multitenancy), **pecaba de ser un "gestor de contenido estático glorificado"**. Era un sistema pasivo: el usuario crea, el sistema publica. En el ecosistema actual de redes sociales, donde el volumen, la adaptación algorítmica y la velocidad son críticos, un sistema pasivo está destinado a la obsolescencia temprana.

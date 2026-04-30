@@ -1,34 +1,45 @@
-# Contexto Arquitectónico y Directrices para IA (SIAG) - V1.0.0
+# Contexto Arquitectónico y Directrices para IA (SIAG) - Estado Real 2026-04-30
 
 ## Propósito
-Este documento está diseñado para ser ingerido por cualquier modelo de Inteligencia Artificial o desarrollador humano que necesite retomar, extender o debuggear este proyecto. Contiene la "memoria muscular" del sistema.
+Documento de continuidad para IA y desarrolladores humanos. Es la referencia de estado técnico vigente del repositorio.
 
-## Estado del Ecosistema (Abril 2026)
-- **Frontend**: Next.js (App Router), React, Zustand (estado), TailwindCSS v4+, shadcn/ui (componentes modulares de UI).
-- **Backend**: Node.js (TypeScript), Express (en transición a microservicios/Go si es necesario), BullMQ para colas, Redis para caché y estado, PostgreSQL para persistencia.
-- **Enfoque Principal**: Autopublicación generativa. El sistema no es pasivo; inyecta inteligencia generativa (IA) para derivar contenido, variar publicaciones (spintax) y gestionar fallbacks de API keys (Carrusel de Llaves).
+## Stack Vigente (Producción Local Actual)
+- **Frontend**: Next.js App Router, React 19, Zustand persist, NextAuth credentials.
+- **Backend**: Node.js + TypeScript + Express + Prisma.
+- **Persistencia activa**: SQLite (`apps/backend/prisma/dev.db`).
+- **Colas**: BullMQ con Redis opcional; fallback directo activo para escenarios sin Redis.
+- **Observabilidad**: OpenTelemetry OTLP + stack LGTM opcional.
+- **Pruebas**: Node test (backend), Vitest (frontend), Playwright E2E.
 
-## Patrones de Diseño Implementados
-1. **Monorepo**: Gestionado vía npm workspaces (`apps/*`, `packages/*`).
-2. **Clean Architecture / DDD**: Separación estricta en el backend (`domain`, `infrastructure`, `presentation`).
-3. **Adapter Pattern**: Toda red social es un adaptador que implementa `ISocialAdapter`. El core del sistema JAMÁS conoce detalles específicos de Facebook o Twitter.
-4. **Resilience Strategy**: El `AiKeyCarousel` gestiona la rotación de API keys si una falla (rate limit, saldo agotado).
-5. **Componentes UI Modulares**: El frontend utiliza un sistema de diseño estricto, con módulos dedicados hasta para el elemento más pequeño (ej. Tooltips).
+## Estado Funcional Confirmado
+- Idioma por defecto en español (`<html lang="es">`) con selector bilingue en UI.
+- RBAC por organizacion en modo estricto cuando `ENFORCE_RBAC=true`.
+- Flujo E2E principal operativo: login, onboarding, publicacion y dashboard.
+- Endpoint de llaves IA operativo con listado enmascarado y control RBAC.
 
-## Instrucciones de Recuperación (Recovery & Bootstrap)
-Si el sistema colapsa o se requiere un setup en un entorno limpio:
-1. Clona el repositorio.
-2. Ejecuta `npm install` en la raíz.
-3. Levanta la infraestructura local: `docker compose -f infrastructure/docker-compose.yml up -d`
-4. Inicializa Prisma: `cd apps/backend && npx prisma db push`
-5. Ejecuta el entorno de desarrollo: `npm run dev --workspaces --if-present`
-*Aviso Forense: Frontend = :3000, Backend = :3001. La persistencia es REAL. No usar Mocks para la generación.*
+## Reglas de Operacion
+1. **Fuente de verdad del estado operativo**: `docs/HANDOFF_OPERATIVO_2026-04-30.md`.
+2. **Suite de cierre obligatoria**: `npm run verify:strict`.
+3. **No introducir cambios sin validar runtime**: comprobar backend `:3001` y frontend `:3000`.
+4. **Sin residuos en repo**: limpiar `test-results`, logs y restaurar `dev.db` antes de cerrar.
+5. **No degradar i18n**: conservar espanol por defecto y selector `Espanol/Ingles`.
 
-## Flujos Críticos a Proteger
-- **Onboarding Automático**: El usuario provee sus keys (OAuth o API), el sistema las valida en background y autoconfigura el `AiKeyCarousel` y los `SocialAdapters`.
-- **Generación Viral**: El `PromptStrategyEngine` toma una "seed" y la transforma en N variaciones usando las mejores prácticas de retención de atención.
+## Bootstrap y Recuperacion Rapida
+1. `npm install`
+2. `Copy-Item .env.example .env` (PowerShell)
+3. `cd apps/backend`
+4. `npx prisma generate`
+5. `npx prisma db push`
+6. `cd ../..`
+7. Backend estricto: `npm run dev:backend:strict`
+8. Frontend: `npm run dev --workspace frontend`
 
-## Reglas de Integración Continua (Military Grade Quality Control)
-- Cero advertencias en TypeScript.
-- Cero dependencias obsoletas conocidas (se debe auditar regularmente).
-- El código redundante debe ser abstraído en `packages/core` o refactorizado inmediatamente.
+## Variables de Entorno Criticas
+- `ENFORCE_RBAC=true`: activa validacion de organizacion/usuario.
+- `NEXT_PUBLIC_DEFAULT_USER_EMAIL`: contexto default para cliente API.
+- `OTEL_ENABLED=true`: activa telemetria.
+- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://localhost:4318/v1/traces`: export de trazas.
+
+## Notas para Continuidad
+- `docs/ARCHITECTURE.md` y `docs/ANALYSIS_AND_VISION.md` contienen parte de vision evolutiva/historica; validar siempre contra este documento y el handoff operativo.
+- Si aparece divergencia entre documentos, priorizar el estado verificado por pruebas y runtime.
