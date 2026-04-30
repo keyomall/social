@@ -39,6 +39,7 @@ Write-Step "Sincronizando Prisma en backend."
 Set-Location "$root\apps\backend"
 npx prisma generate
 npx prisma db push --accept-data-loss
+npm run seed:admin
 Set-Location $root
 
 Write-Step "Levantando backend estricto en nueva terminal."

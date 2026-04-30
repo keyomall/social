@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,8 +36,11 @@ export function LoginGate() {
       return;
     }
 
-    window.localStorage.setItem("siag-auth-user-email", email);
+    const session = await getSession();
+    const sessionEmail = session?.user?.email ?? email;
+    window.localStorage.setItem("siag-auth-user-email", sessionEmail);
     setLoading(false);
+    window.location.reload();
   };
 
   return (
@@ -53,10 +56,10 @@ export function LoginGate() {
         </CardHeader>
         <CardContent className="space-y-3">
           <Input
-            type="email"
+            type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="admin@empresa.com"
+            placeholder="admin o admin@empresa.com"
             disabled={loading}
           />
           <Input

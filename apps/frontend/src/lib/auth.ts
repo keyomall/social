@@ -8,6 +8,15 @@ import bcrypt from "bcryptjs";
 
 const bootstrapEmail = process.env.NEXT_PUBLIC_DEFAULT_USER_EMAIL?.toLowerCase();
 const isLocalBootstrapEnabled = process.env.NODE_ENV !== "production" && Boolean(bootstrapEmail);
+const adminAlias = "admin";
+const adminEmail = "admin@keryx.local";
+
+function normalizeCredentialIdentifier(rawCredential: string) {
+  const normalized = rawCredential.trim().toLowerCase();
+  if (!normalized) return normalized;
+  if (normalized === adminAlias) return adminEmail;
+  return normalized;
+}
 
 async function ensureDefaultOrgMembership(userId: string) {
   let org = await prisma.organization.findFirst({
@@ -43,13 +52,13 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Enterprise Auth",
       credentials: {
-        email: { label: "Email corporativo", type: "email" },
+        email: { label: "Usuario o email corporativo", type: "text" },
         password: { label: "Contraseña", type: "password" }
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const normalizedEmail = credentials.email.toLowerCase();
+        const normalizedEmail = normalizeCredentialIdentifier(credentials.email);
         let user = await prisma.user.findUnique({
           where: { email: normalizedEmail }
         });

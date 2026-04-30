@@ -54,6 +54,7 @@ El sistema usa base de datos real para llaves y posts (sin dependencia de mocks 
 - El frontend envía automáticamente `x-user-email` tras login (NextAuth credentials) y `x-organization-id` desde el store persistido.
 - Si no hay sesión válida, el sistema muestra compuerta de login antes del onboarding.
 - Arranque backend estricto (Windows): `npm run dev:backend:strict`
+- Credencial admin local por defecto: usuario `admin` (alias de `admin@keryx.local`) y contraseña `dios`.
 
 ## Trazas OpenTelemetry
 - Activar con:

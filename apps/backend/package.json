@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "ts-node src/index.ts",
     "build": "tsc",
-    "test": "set NODE_ENV=test&& npx prisma generate && npx prisma db push --accept-data-loss && npm run build && node --test \"dist/**/*.test.js\""
+    "test": "set NODE_ENV=test&& npx prisma generate && npx prisma db push --accept-data-loss && npm run build && node --test \"dist/**/*.test.js\"",
+    "seed:admin": "set NODE_ENV=development&& npx prisma generate && npx prisma db push --accept-data-loss && ts-node src/scripts/seedAdmin.ts"
   },
   "keywords": [],
   "author": "",
