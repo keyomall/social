@@ -1,12 +1,12 @@
 #!/bin/bash
-# AuraSync - Startup & Healthcheck Script (Military Grade)
+# KERYX - Script de Arranque y Healthcheck
 LOG_FILE="system_health.log"
 
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
-log "Iniciando secuencia de arranque de AuraSync..."
+log "Iniciando secuencia de arranque de KERYX..."
 log "========================================================="
 
 log "[1/6] Comprobando dependencias del sistema..."

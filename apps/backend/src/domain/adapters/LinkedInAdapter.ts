@@ -4,8 +4,8 @@ export class LinkedInAdapter implements ISocialAdapter {
   platformName = 'LinkedIn';
 
   async validateCredentials(credentials: Record<string, any>): Promise<boolean> {
-    console.log(`[LinkedInAdapter] Validando credenciales para org/person ID: ${credentials.linkedInId}`);
-    return true;
+    const hasId = typeof credentials.linkedInId === "string" && credentials.linkedInId.length > 0;
+    return hasId;
   }
 
   async publish(payload: SocialPostPayload, credentials: Record<string, any>): Promise<SocialPostResponse> {

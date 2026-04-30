@@ -4,8 +4,10 @@ export class TikTokAdapter implements ISocialAdapter {
   platformName = 'TikTok';
 
   async validateCredentials(credentials: Record<string, any>): Promise<boolean> {
-    console.log(`[TikTokAdapter] Validando credenciales OAuth (TikTok for Developers)`);
-    return true;
+    return Boolean(
+      typeof credentials.accessToken === "string" &&
+      credentials.accessToken.length > 0
+    );
   }
 
   async publish(payload: SocialPostPayload, credentials: Record<string, any>): Promise<SocialPostResponse> {

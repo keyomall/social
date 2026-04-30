@@ -5,13 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, CheckCircle2, AlertCircle, RefreshCcw, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { HelpTooltip } from "@/components/ui/HelpTooltip";
 
 export function CampaignTracker() {
   const [filter, setFilter] = useState("ALL");
 
   const allPosts = [
     { id: '1', content: 'Lanzamiento del producto X', platform: 'LinkedIn', status: 'PUBLISHED', date: 'Hace 5 min' },
-    { id: '2', content: 'Visión AuraSync', platform: 'Twitter (X)', status: 'SCHEDULED', date: 'En Cola' },
+    { id: '2', content: 'Visión KERYX', platform: 'Twitter (X)', status: 'SCHEDULED', date: 'En Cola' },
     { id: '3', content: 'Campaña Visual (TikTok)', platform: 'TikTok', status: 'FAILED', date: 'Hace 1 hora', error: 'Falta Video' },
     { id: '4', content: 'Noticia corporativa Q3', platform: 'Facebook', status: 'PUBLISHED', date: 'Hace 2 horas' },
   ];
@@ -22,7 +23,14 @@ export function CampaignTracker() {
     <Card className="shadow-sm border-border/50 bg-card/50">
       <CardHeader>
         <CardTitle className="text-lg flex items-center justify-between">
-          <span>Historial de Campañas</span>
+          <span className="flex items-center gap-2">
+            Historial de Campañas
+            <HelpTooltip
+              title="Historial y Auditoría"
+              description="Muestra el estado real de publicación por red: en cola, publicado o fallido."
+              example="Si ves FALLIDO, revisa el motivo en la columna Tiempo/Log."
+            />
+          </span>
           <div className="flex gap-2">
             <div className="flex bg-background border border-border/50 rounded-md p-1 mr-4">
                <button onClick={() => setFilter("ALL")} className={`text-xs px-2 py-1 rounded ${filter === 'ALL' ? 'bg-muted' : ''}`}>Todo</button>

@@ -3,9 +3,11 @@ import { useRef, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download, FileText, FileBarChart, Sparkles } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip } from "recharts";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { HelpTooltip } from "@/components/ui/HelpTooltip";
+import { ChartFrame } from "@/components/ui/ChartFrame";
 
 export function ReportEngine() {
   const reportRef = useRef<HTMLDivElement>(null);
@@ -31,7 +33,7 @@ export function ReportEngine() {
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save("AuraSync_Reporte_Ejecutivo.pdf");
+      pdf.save("KERYX_Reporte_Ejecutivo.pdf");
     } catch (error) {
       console.error("Error al exportar el PDF:", error);
     } finally {
@@ -46,6 +48,11 @@ export function ReportEngine() {
           <CardTitle className="text-lg flex items-center gap-2">
             <FileBarChart className="w-5 h-5 text-indigo-500" />
             Reportes Ejecutivos
+            <HelpTooltip
+              title="Exportación Ejecutiva"
+              description="Genera un reporte visual para compartir resultados con clientes o equipo."
+              example="Pulsa 'PDF Profesional' para descargar resumen con métricas y comparativas."
+            />
           </CardTitle>
           <CardDescription>Genera informes en PDF o DOCX con gráficas, métricas cruzadas y diagnósticos de la IA para tus clientes o jefes.</CardDescription>
         </div>
@@ -64,7 +71,7 @@ export function ReportEngine() {
         <div ref={reportRef} className="p-8 bg-white text-black rounded-lg border border-slate-200">
           <div className="flex justify-between items-end border-b-2 border-slate-900 pb-4 mb-6">
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tighter text-slate-900">AuraSync</h1>
+              <h1 className="text-3xl font-extrabold tracking-tighter text-slate-900">KERYX</h1>
               <p className="text-sm font-semibold tracking-widest text-slate-500 uppercase mt-1">Reporte Ejecutivo de Rendimiento</p>
             </div>
             <div className="text-right">
@@ -86,21 +93,21 @@ export function ReportEngine() {
 
           <div className="mb-6">
             <h2 className="text-xl font-bold mb-4">2. Comparativa de Redes (Métricas Duras)</h2>
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data}>
+            <ChartFrame className="h-[300px] w-full">
+              {({ width, height }) => (
+                <BarChart width={width} height={height} data={data}>
                   <XAxis dataKey="name" stroke="#64748b" />
                   <YAxis stroke="#64748b" />
-                  <RechartsTooltip cursor={{fill: 'transparent'}} contentStyle={{backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0'}} />
+                  <RechartsTooltip cursor={{ fill: "transparent" }} contentStyle={{ backgroundColor: "#fff", borderRadius: "8px", border: "1px solid #e2e8f0" }} />
                   <Bar dataKey="reach" name="Alcance (K)" fill="#4f46e5" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="engagement" name="Engagement (%)" fill="#10b981" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="engagement" name="Interacción (%)" fill="#10b981" radius={[4, 4, 0, 0]} />
                 </BarChart>
-              </ResponsiveContainer>
-            </div>
+              )}
+            </ChartFrame>
           </div>
 
           <div className="mt-8 pt-4 border-t border-slate-200 text-center text-xs text-slate-400">
-            <p>Generado automáticamente por AuraSync V6 - The AI Publishing Engine</p>
+            <p>Generado automáticamente por KERYX - Motor Inteligente de Publicación</p>
           </div>
         </div>
       </CardContent>

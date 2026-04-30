@@ -6,8 +6,27 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 
+const bootstrapEmail = process.env.NEXT_PUBLIC_DEFAULT_USER_EMAIL?.toLowerCase();
+const isLocalBootstrapEnabled = process.env.NODE_ENV !== "production" && Boolean(bootstrapEmail);
+
+async function ensureDefaultOrgMembership(userId: string) {
+  let org = await prisma.organization.findFirst({
+    where: { users: { some: { userId } } },
+    select: { id: true },
+  });
+
+  if (!org) {
+    org = await prisma.organization.create({
+      data: { name: "Workspace Inicial" },
+      select: { id: true },
+    });
+    await prisma.organizationUser.create({
+      data: { userId, organizationId: org.id, role: "OWNER" },
+    });
+  }
+}
+
 export const authOptions: NextAuthOptions = {
-  // @ts-ignore
   adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
@@ -29,34 +48,73 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-        
-        // @ts-ignore
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
+
+        const normalizedEmail = credentials.email.toLowerCase();
+        let user = await prisma.user.findUnique({
+          where: { email: normalizedEmail }
         });
-        
+
+        if (!user && isLocalBootstrapEnabled && normalizedEmail === bootstrapEmail) {
+          const hashedPassword = await bcrypt.hash(credentials.password, 12);
+          user = await prisma.user.create({
+            data: {
+              email: normalizedEmail,
+              name: "Admin Inicial",
+              role: "ADMIN",
+              hashedPassword,
+            },
+          });
+          await ensureDefaultOrgMembership(user.id);
+          return { id: user.id, email: user.email, name: user.name, role: user.role };
+        }
+
         if (!user) {
-          // @ts-ignore
           const userCount = await prisma.user.count();
           if (userCount === 0) {
             const hashedPassword = await bcrypt.hash(credentials.password, 12);
-            // @ts-ignore
             const newUser = await prisma.user.create({
               data: {
-                email: credentials.email,
+                email: normalizedEmail,
                 name: "Admin Inicial",
                 role: "ADMIN",
+                hashedPassword,
               }
             });
-            // @ts-ignore
             const org = await prisma.organization.create({ data: { name: "Workspace Inicial" } });
-            // @ts-ignore
             await prisma.organizationUser.create({ data: { userId: newUser.id, organizationId: org.id, role: "OWNER" } });
             return { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role };
           }
-          return null; 
+          return null;
         }
-        
+
+        if (!user.hashedPassword) {
+          if (isLocalBootstrapEnabled && normalizedEmail === bootstrapEmail) {
+            const hashedPassword = await bcrypt.hash(credentials.password, 12);
+            user = await prisma.user.update({
+              where: { id: user.id },
+              data: { hashedPassword },
+            });
+            await ensureDefaultOrgMembership(user.id);
+            return { id: user.id, email: user.email, name: user.name, role: user.role };
+          }
+          return null;
+        }
+
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.hashedPassword);
+        if (!isPasswordValid) {
+          if (isLocalBootstrapEnabled && normalizedEmail === bootstrapEmail) {
+            const hashedPassword = await bcrypt.hash(credentials.password, 12);
+            user = await prisma.user.update({
+              where: { id: user.id },
+              data: { hashedPassword },
+            });
+            await ensureDefaultOrgMembership(user.id);
+            return { id: user.id, email: user.email, name: user.name, role: user.role };
+          }
+          return null;
+        }
+
+        await ensureDefaultOrgMembership(user.id);
         return {
           id: user.id,
           email: user.email,
@@ -70,17 +128,14 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        // @ts-ignore
-        token.role = user.role;
+        token.role = (user as { role?: string }).role;
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
-        // @ts-ignore
-        session.user.id = token.id;
-        // @ts-ignore
-        session.user.role = token.role;
+        (session.user as { id?: string; role?: string }).id = token.id as string;
+        (session.user as { id?: string; role?: string }).role = token.role as string;
       }
       return session;
     }

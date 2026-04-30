@@ -7,6 +7,7 @@ import { Send, Sparkles, TrendingUp, RefreshCcw, Layers, Newspaper, ShieldCheck,
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { HelpTooltip } from "@/components/ui/HelpTooltip";
 import { useConfigStore } from "@/store/useConfigStore";
 import { apiPost } from "@/lib/api-client";
 
@@ -82,7 +83,14 @@ export function PublishEngine() {
     <div className="flex flex-col gap-6">
       <Card className="shadow-sm border-border/50 bg-card/50">
         <CardHeader>
-          <CardTitle className="text-lg">Redacción de Publicaciones</CardTitle>
+          <CardTitle className="text-lg flex items-center gap-2">
+            Redacción de Publicaciones
+            <HelpTooltip
+              title="Motor de Redacción"
+              description="Crea contenido con IA o manual y lo envía a cola según tus plataformas seleccionadas."
+              example="Ejemplo: idea semilla 'Lanzamiento SaaS' + estrategia Viral + Facebook/LinkedIn."
+            />
+          </CardTitle>
           <CardDescription>Crea tus publicaciones usando la Inteligencia Artificial (Spintax) o redacta de manera manual si no tienes créditos o conexión IA.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -92,7 +100,14 @@ export function PublishEngine() {
             </div>
           )}
           <div className="space-y-2 mb-4">
-            <label className="text-sm font-medium">Redes Destino</label>
+            <label className="text-sm font-medium flex items-center gap-2">
+              Redes Destino
+              <HelpTooltip
+                title="Selección de Plataformas"
+                description="Define en qué redes publicar. El sistema valida credenciales y compatibilidad de medios por red."
+                example="TikTok requiere video; Instagram requiere al menos una imagen o video."
+              />
+            </label>
             <div className="flex flex-wrap gap-2">
               <Button size="sm" variant={platforms.includes("Facebook") ? "default" : "outline"} onClick={() => togglePlatform("Facebook")}>
                 Facebook
@@ -127,7 +142,14 @@ export function PublishEngine() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Media URLs (opcional, separadas por coma)</label>
+            <label className="text-sm font-medium flex items-center gap-2">
+              Media URLs (opcional, separadas por coma)
+              <HelpTooltip
+                title="Archivos Multimedia"
+                description="Pega URLs públicas de imágenes o videos para enriquecer la publicación."
+                example="https://cdn.midominio.com/banner.jpg, https://cdn.midominio.com/reel.mp4"
+              />
+            </label>
             <Input
               placeholder="https://.../imagen1.jpg, https://.../video1.mp4"
               value={mediaUrlsInput}
@@ -139,7 +161,14 @@ export function PublishEngine() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Credenciales por red (JSON opcional)</label>
+            <label className="text-sm font-medium flex items-center gap-2">
+              Credenciales por red (JSON opcional)
+              <HelpTooltip
+                title="Credenciales por Plataforma"
+                description="Permite definir credenciales por red para evitar fallos de autenticación al publicar."
+                example='{"LinkedIn":{"linkedInId":"urn:li:organization:123"}}'
+              />
+            </label>
             <Textarea
               className="min-h-[90px]"
               placeholder='{"Facebook":{"accessToken":"...","pageId":"..."}, "Twitter":{"accessToken":"..."}}'
@@ -254,8 +283,8 @@ export function PublishEngine() {
         </CardHeader>
         <CardContent className="space-y-4">
           {variants.length === 0 ? (
-            <div className="h-32 flex items-center justify-center border-2 border-dashed border-border rounded-lg bg-card/30">
-              <p className="text-muted-foreground text-sm">Waiting for AI generation...</p>
+              <div className="h-32 flex items-center justify-center border-2 border-dashed border-border rounded-lg bg-card/30">
+              <p className="text-muted-foreground text-sm">Esperando generación de IA...</p>
             </div>
           ) : (
             variants.map((v, i) => (

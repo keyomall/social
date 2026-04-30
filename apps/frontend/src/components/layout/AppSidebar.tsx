@@ -1,7 +1,11 @@
+"use client";
 import { ShieldAlert, Activity, Sparkles, Layers, Settings2, BarChart3 } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
+import { useI18n } from "@/components/providers/I18nProvider";
 
 export function AppSidebar() {
+  const { t } = useI18n();
+
   return (
     <Sidebar variant="inset" className="border-r border-border/50">
       <SidebarHeader className="p-4">
@@ -10,7 +14,7 @@ export function AppSidebar() {
             <Sparkles className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold tracking-wider text-sm text-foreground">AuraSync</span>
+            <span className="font-bold tracking-wider text-sm text-foreground">KERYX</span>
             <span className="text-[10px] text-muted-foreground font-mono">v2.0.0-PRO</span>
           </div>
         </div>
@@ -18,36 +22,36 @@ export function AppSidebar() {
       <SidebarContent className="px-2 mt-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton isActive tooltip="Generative Engine">
+            <SidebarMenuButton isActive tooltip={t("sidebarEngine")}>
               <Sparkles />
-              <span>Generative Engine</span>
+              <span>{t("sidebarEngine")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Campaign Tracking">
+            <SidebarMenuButton tooltip={t("sidebarCampaigns")}>
               <Layers />
-              <span>Campaign Tracking</span>
+              <span>{t("sidebarCampaigns")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Analytics">
+            <SidebarMenuButton tooltip={t("sidebarAnalytics")}>
               <BarChart3 />
-              <span>Analytics</span>
+              <span>{t("sidebarAnalytics")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem className="mt-8">
-            <span className="px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">System</span>
+            <span className="px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">{t("sidebarSystem")}</span>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="System Health">
+            <SidebarMenuButton tooltip={t("sidebarHealth")}>
               <Activity />
-              <span>System Health</span>
+              <span>{t("sidebarHealth")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="AI Vault & Config">
+            <SidebarMenuButton tooltip={t("sidebarVault")}>
               <Settings2 />
-              <span>AI Vault & Config</span>
+              <span>{t("sidebarVault")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

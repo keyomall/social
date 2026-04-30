@@ -4,8 +4,12 @@ export class InstagramAdapter implements ISocialAdapter {
   platformName = 'Instagram';
 
   async validateCredentials(credentials: Record<string, any>): Promise<boolean> {
-    console.log(`[InstagramAdapter] Validando cuenta profesional conectada a FB Page: ${credentials.igAccountId}`);
-    return true;
+    return Boolean(
+      typeof credentials.igAccountId === "string" &&
+      credentials.igAccountId.length > 0 &&
+      typeof credentials.accessToken === "string" &&
+      credentials.accessToken.length > 0
+    );
   }
 
   async publish(payload: SocialPostPayload, credentials: Record<string, any>): Promise<SocialPostResponse> {

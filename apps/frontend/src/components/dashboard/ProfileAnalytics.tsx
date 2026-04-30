@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from "@/components/ui/button";
 import { BrainCircuit, LineChart, Users, Eye, ArrowUpRight, Sparkles } from "lucide-react";
 import { apiPost } from "@/lib/api-client";
+import { HelpTooltip } from "@/components/ui/HelpTooltip";
 
 export function ProfileAnalytics() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -37,6 +38,11 @@ export function ProfileAnalytics() {
           <CardTitle className="text-lg flex items-center gap-2">
             <LineChart className="w-5 h-5 text-emerald-500" />
             Análisis y Rendimiento de Perfiles
+            <HelpTooltip
+              title="Diagnóstico de Perfiles"
+              description="Compara señales clave por perfil y genera recomendaciones estratégicas con IA."
+              example="Pulsa 'Generar Diagnóstico IA' para obtener acciones sugeridas."
+            />
           </CardTitle>
           <CardDescription>Visualiza el impacto de tus cuentas conectadas (Facebook, LinkedIn) y compara métricas clave.</CardDescription>
         </CardHeader>
@@ -57,7 +63,7 @@ export function ProfileAnalytics() {
                   <div className="bg-card/50 p-2 rounded">
                     <LineChart className="w-3 h-3 mx-auto mb-1 text-muted-foreground" />
                     <p className="font-bold">{p.engagement}</p>
-                    <p className="text-[10px] text-muted-foreground">Engagement</p>
+                    <p className="text-[10px] text-muted-foreground">Interacción</p>
                   </div>
                   <div className="bg-card/50 p-2 rounded">
                     <Eye className="w-3 h-3 mx-auto mb-1 text-muted-foreground" />

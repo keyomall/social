@@ -3,9 +3,11 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { ArrowUpRight, ArrowDownRight, Users, Eye, MousePointerClick, Share2 } from 'lucide-react';
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area } from 'recharts';
 import { useConfigStore } from '@/store/useConfigStore';
 import { apiGet } from '@/lib/api-client';
+import { HelpTooltip } from "@/components/ui/HelpTooltip";
+import { ChartFrame } from "@/components/ui/ChartFrame";
 
 interface AnalyticsPoint {
   name: string;
@@ -65,7 +67,7 @@ export function AnalyticsDashboard() {
           <CardContent className="p-6">
             <div className="flex justify-between items-start">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-[#8E8E93]">Engagement Rate</p>
+                <p className="text-sm font-medium text-[#8E8E93]">Tasa de Interacción</p>
                 <p className="text-3xl font-bold text-white">4.2%</p>
               </div>
               <div className="p-2 bg-[#2C2C2E] rounded-md">
@@ -121,7 +123,14 @@ export function AnalyticsDashboard() {
 
       <Card className="bg-[#1C1C1E] border-[#2C2C2E]">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg font-medium text-white">Rendimiento de Audiencia (Real-Time DB)</CardTitle>
+          <CardTitle className="text-lg font-medium text-white flex items-center gap-2">
+            Rendimiento de Audiencia (Tiempo Real)
+            <HelpTooltip
+              title="Panel de Analítica"
+              description="Visualiza tendencias de impresiones e interacciones en el periodo seleccionado."
+              example="Cambia entre 7d/30d/90d para comparar crecimiento."
+            />
+          </CardTitle>
           <div className="flex space-x-2">
             {['7d', '30d', '90d'].map((range) => (
               <button
@@ -139,35 +148,35 @@ export function AnalyticsDashboard() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="h-[350px] w-full">
-            {isLoading ? (
-              <div className="h-full w-full flex items-center justify-center text-muted-foreground">Cargando métricas...</div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+          <ChartFrame className="h-[350px] w-full">
+            {({ width, height }) =>
+              isLoading ? (
+                <div className="h-full w-full flex items-center justify-center text-muted-foreground">Cargando métricas...</div>
+              ) : (
+                <AreaChart width={width} height={height} data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="name" stroke="#8E8E93" />
                   <YAxis stroke="#8E8E93" />
                   <CartesianGrid strokeDasharray="3 3" stroke="#2C2C2E" vertical={false} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#1C1C1E', border: '1px solid #2C2C2E', borderRadius: '8px', color: '#fff' }}
-                    itemStyle={{ color: '#fff' }}
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "#1C1C1E", border: "1px solid #2C2C2E", borderRadius: "8px", color: "#fff" }}
+                    itemStyle={{ color: "#fff" }}
                   />
                   <Area type="monotone" dataKey="views" name="Impresiones" stroke="#3b82f6" fillOpacity={1} fill="url(#colorViews)" />
                   <Area type="monotone" dataKey="clicks" name="Interacciones" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorClicks)" />
                 </AreaChart>
-              </ResponsiveContainer>
-            )}
-          </div>
+              )
+            }
+          </ChartFrame>
         </CardContent>
       </Card>
     </div>

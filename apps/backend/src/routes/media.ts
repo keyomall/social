@@ -24,8 +24,7 @@ if (isS3Enabled) {
   uploadStorage = multerS3({
     s3: s3,
     bucket: process.env.S3_BUCKET_NAME!,
-    // @ts-ignore
-    acl: 'public-read',
+    ...( { acl: 'public-read' } as any ),
     metadata: function (req: any, file: any, cb: any) {
       cb(null, { fieldName: file.fieldname });
     },

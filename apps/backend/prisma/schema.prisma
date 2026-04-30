@@ -39,6 +39,7 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
+  hashedPassword String?
   emailVerified DateTime?
   image         String?
   role          String    @default("USER") // USER, ADMIN
@@ -101,6 +102,29 @@ model Post {
   scheduledTime  DateTime?
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id])
+  metrics        PostMetric[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+}
+
+model PostMetric {
+  id         String   @id @default(uuid())
+  postId     String
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  platform   String
+  views      Int      @default(0)
+  clicks     Int      @default(0)
+  shares     Int      @default(0)
+  source     String   @default("webhook")
+  capturedAt DateTime @default(now())
+}
+
+model SocialWebhookEvent {
+  id         String   @id @default(uuid())
+  platform   String
+  eventType  String
+  externalId String?
+  postId     String?
+  payload    String
+  createdAt  DateTime @default(now())
 }

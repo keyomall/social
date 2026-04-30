@@ -4,8 +4,12 @@ export class WhatsAppAdapter implements ISocialAdapter {
   platformName = 'WhatsApp';
 
   async validateCredentials(credentials: Record<string, any>): Promise<boolean> {
-    console.log(`[WhatsAppAdapter] Validando token de WhatsApp Cloud API (Business)`);
-    return true;
+    return Boolean(
+      typeof credentials.phoneNumberId === "string" &&
+      credentials.phoneNumberId.length > 0 &&
+      typeof credentials.accessToken === "string" &&
+      credentials.accessToken.length > 0
+    );
   }
 
   async publish(payload: SocialPostPayload, credentials: Record<string, any>): Promise<SocialPostResponse> {
