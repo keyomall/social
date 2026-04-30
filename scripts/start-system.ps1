@@ -42,6 +42,9 @@ npx prisma db push --accept-data-loss
 npm run seed:admin
 Set-Location $root
 
+Write-Step "Generando Prisma del frontend (auth) antes de levantar servicios."
+npm run prisma:generate --workspace frontend
+
 Write-Step "Levantando backend estricto en nueva terminal."
 Start-Process powershell -ArgumentList @(
   "-NoExit",

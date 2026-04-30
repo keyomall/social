@@ -24,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="dark">
-      <body className={`${inter.className} bg-background text-foreground selection:bg-emerald-500/30`}>
+    <html lang="es" className="dark" suppressHydrationWarning>
+      <body suppressHydrationWarning className={`${inter.className} bg-background text-foreground selection:bg-emerald-500/30`}>
         <TooltipProvider delay={200}>
           <AuthSessionProvider>
             <I18nProvider>

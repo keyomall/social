@@ -55,6 +55,7 @@ El sistema usa base de datos real para llaves y posts (sin dependencia de mocks 
 - Si no hay sesión válida, el sistema muestra compuerta de login antes del onboarding.
 - Arranque backend estricto (Windows): `npm run dev:backend:strict`
 - Credencial admin local por defecto: usuario `admin` (alias de `admin@keryx.local`) y contraseña `dios`.
+- El frontend genera Prisma automáticamente antes de `dev/build` para que NextAuth valide credenciales sobre la base real.
 
 ## Trazas OpenTelemetry
 - Activar con:
